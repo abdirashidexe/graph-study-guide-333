@@ -400,41 +400,18 @@ public class Practice {
    */
   public static List<int[]> nextMoves(char[][] board, int[] current, int[][] directions) {
     List<int[]> moves = new ArrayList<>();
-    // SIMPLIFY IT LIKE LEAREND IN CLASS?
-
+    
     int curR = current[0];
     int curC = current[1];
 
-    // up
-    int newR = curR - 1;
-    int newC = curC;
-    if (newR >= 0 && board[newR][newC] != 'X')
-    {
-      moves.add(new int[]{newR, newC});
-    }
+    for (int[] dir : directions) {
+      int newR = curR + dir[0];
+      int newC = curC + dir[1];
 
-    // down
-    newR = curR + 1;
-    newC = curC;
-    if (newR < board.length && board[newR][newC] != 'X')
-    {
-      moves.add(new int[]{newR, newC});
-    }
-
-    // left
-    newR = curR;
-    newC = curC - 1;
-    if (newC >= 0 && board[newR][newC] != 'X')
-    {
-      moves.add(new int[]{newR, newC});
-    }
-
-    // right
-    newR = curR;
-    newC = curC + 1;
-    if (newC < board[newR].length && board[newR][newC] != 'X')
-    {
-      moves.add(new int[]{newR, newC});
+      if (newR >= 0 && newR < board.length && newC >= 0 && newC < board[0].length && board[newR][newC] != 'X')
+      {
+        moves.add(new int[]{newR, newC});
+      }
     }
 
     return moves;
