@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,8 +28,127 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return oddVerticesHelper(starting, myVisited);
   }
+
+  public static int oddVerticesHelper(Vertex<Integer> vertex, Set<Vertex<Integer>> visited)
+  {
+    if (vertex == null || visited.contains(vertex)) return 0;
+
+    int oddCount = 0;
+    visited.add(vertex);
+
+    if (vertex.data % 2 != 0) 
+    {
+      oddCount++;
+    }
+
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      oddCount += oddVerticesHelper(neighbor, visited);
+    }
+
+    return oddCount;
+  }
+
+  public static int sumEvenVertices(Vertex<Integer> starting)
+  {
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return sumEvenVertices(starting, myVisited);
+  }
+
+  public static int sumEvenVertices(Vertex<Integer> vertex, Set<Vertex<Integer>> visited)
+  {
+    if (vertex == null || visited.contains(vertex)) return 0;
+
+    int sum = 0;
+    visited.add(vertex);
+
+    if (vertex.data % 2 == 0)
+    {
+      sum += vertex.data;
+    }
+    
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      sum += sumEvenVertices(neighbor, visited);
+    }
+
+    return sum;
+  }
+
+  public static int countAbove(Vertex<Integer> starting, int threshold)
+  {
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return countAbove(starting, threshold, myVisited);
+  }
+
+  public static int countAbove(Vertex<Integer> vertex, int threshold, Set<Vertex<Integer>> visited)
+  {
+    if (vertex == null || visited.contains(vertex)) return 0;
+
+    visited.add(vertex);
+    int count = 0;
+
+    if (vertex.data > threshold)
+    {
+      count++;
+    }
+
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      count += countAbove(neighbor, threshold, visited);
+    }
+
+    return count;
+  }
+
+  public static boolean containsValue(Vertex<Integer> starting, int target)
+  {
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return containsValue(starting, target, myVisited);
+  }
+
+  public static boolean containsValue(Vertex<Integer> vertex, int target, Set<Vertex<Integer>> visited)
+  {
+    if (vertex == null || visited.contains(vertex)) return false;
+
+    visited.add(vertex);
+
+    if (vertex.data == target) return true;
+
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      return containsValue(neighbor, target, visited);
+    }
+
+    return false;
+  }
+
+  public static List<Integer> collectValues(Vertex<Integer> starting) {
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return collectValues(starting, myVisited);
+  }
+
+  public static List<Integer> collectValues(Vertex<Integer> vertex, Set<Vertex<Integer>> visited)
+  {
+    ArrayList<Integer> list = new ArrayList<>();
+
+    if (vertex == null || visited.contains(vertex)) return list; // could also say return new ArrayList<>();
+
+    visited.add(vertex);
+
+    list.add(vertex.data);
+
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      list.addAll(collectValues(neighbor, visited));
+    }
+
+    return list;
+  }
+
 
   /**
    * Returns a *sorted* list of all values reachable from the starting vertex (including the starting vertex itself).
@@ -47,7 +169,28 @@ public class Practice {
    * @return a sorted list of all reachable vertex values by 
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
-    return null;
+    Set<Vertex<Integer>> myVisited = new HashSet<>();
+    return sortedReachable(starting, myVisited);
+  }
+
+  public static List<Integer> sortedReachable(Vertex<Integer> vertex, Set<Vertex<Integer>> visited)
+  {
+    ArrayList<Integer> list = new ArrayList<>();
+
+    if (vertex == null || visited.contains(vertex)) return list;
+
+    visited.add(vertex);
+
+    list.add(vertex.data);
+
+    for (Vertex<Integer> neighbor : vertex.neighbors)
+    {
+      list.addAll(sortedReachable(neighbor, visited));
+    }
+
+    Collections.sort(list);
+
+    return list;
   }
 
   /**
@@ -61,7 +204,26 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    Set<Integer> myVisited = new HashSet<>();
+    return sortedReachable(graph, starting, myVisited);
+  }
+
+  public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int vertex, Set<Integer> visited) {
+    ArrayList<Integer> list = new ArrayList<>();
+
+    if (!graph.containsKey(vertex) || visited.contains(vertex)) return list;
+
+    visited.add(vertex);
+    list.add(vertex);
+
+    for (int neighbor : graph.get(vertex))
+    {
+      list.addAll(sortedReachable(graph, neighbor, visited));
+    }
+
+    Collections.sort(list);
+
+    return list;
   }
 
   /**
@@ -79,6 +241,26 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    Set<Vertex<T>> myVisited_v1 = new HashSet<>();
+    Set<Vertex<T>> myVisited_v2 = new HashSet<>();
+    return twoWay(v1, myVisited_v1, v2) && twoWay(v2, myVisited_v2, v1);
+  }
+
+  public static <T> boolean twoWay(Vertex<T> vertex, Set<Vertex<T>> visited, Vertex<T> target)
+  {
+    if (vertex == null || visited.contains(vertex)) return false;
+    if (vertex == target) return true;
+
+    visited.add(vertex);
+
+    for (Vertex<T> neighbor : vertex.neighbors)
+    {
+      if (twoWay(neighbor, visited, target))
+      {
+        return true;
+      }
+    }
+
     return false;
   }
 
